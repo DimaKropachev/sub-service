@@ -50,7 +50,7 @@ func (a *App) Start() {
 	defer cancelServCtx()
 
 	go func() {
-		a.log.Info("http server starting...", zap.String("addr", fmt.Sprintf("%s:%d", a.cfg.HTTP.Host, a.cfg.HTTP.Port)))
+		a.log.Info("http server starting...", zap.String("port", fmt.Sprintf(":%d", a.cfg.HTTP.Port)))
 		if err = server.Run(); err != nil {
 			a.log.Error("failed to start http server", zap.Error(err))
 			cancelServCtx()

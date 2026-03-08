@@ -11,7 +11,6 @@ import (
 )
 
 type Config struct {
-	Host string `env:"HTTP_HOST" env-default:""`
 	Port int    `env:"HTTP_PORT" env-default:"8083"`
 }
 
@@ -35,7 +34,7 @@ func NewServer(cfg Config, h *Handler, m *Middleware) *Server {
 
 	return &Server{
 		s: http.Server{
-			Addr: fmt.Sprintf("%s:%d", cfg.Host, cfg.Port),
+			Addr: fmt.Sprintf(":%d", cfg.Port),
 			Handler: r,
 		},
 	}
