@@ -1,0 +1,257 @@
+definitions:
+  dto.AddSubscriptionResponse:
+    properties:
+      id:
+        example: 123
+        type: integer
+    type: object
+  dto.CreateSubscriptionRequest:
+    properties:
+      end_date:
+        example: 07-2025
+        type: string
+      price:
+        example: 399
+        type: integer
+      service_name:
+        example: Yandex Plus
+        type: string
+      start_date:
+        example: 01-2026
+        type: string
+      user_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    type: object
+  dto.ErrorResponse:
+    properties:
+      error:
+        example: Internal server error
+        type: string
+    type: object
+  dto.GetSubscriptionResponse:
+    properties:
+      end_date:
+        example: 07-2026
+        type: string
+      id:
+        example: 123
+        type: integer
+      price:
+        example: 399
+        type: integer
+      service_name:
+        example: Yandex Plus
+        type: string
+      start_date:
+        example: 01-2026
+        type: string
+      user_id:
+        example: 123e4567-e89b-12d3-a456-426614174000
+        type: string
+    type: object
+  dto.TotalCostResponse:
+    properties:
+      total_cost:
+        example: 1799
+        type: integer
+    type: object
+  dto.UpdateSubscriptionRequest:
+    properties:
+      end_date:
+        example: 07-2026
+        type: string
+      price:
+        example: 399
+        type: integer
+    type: object
+info:
+  contact: {}
+  description: API для управления подписками пользователей. Позволяет создавать, получать,
+    обновлять и удалять подписки, а также считать их общую стоимость.
+  title: Subscriptions Service API
+  version: "1.0"
+paths:
+  /subscriptions:
+    get:
+      description: Получает список всех подписок
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Список подписок
+          schema:
+            items:
+              $ref: '#/definitions/dto.GetSubscriptionResponse'
+            type: array
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Получение списка подписок
+      tags:
+      - subscriptions
+    post:
+      consumes:
+      - application/json
+      description: Создает новую запись о подписке в базе данных на основе переданных
+        данных
+      parameters:
+      - description: Данные для создания подписки
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.CreateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: ID созданной подписки
+          schema:
+            $ref: '#/definitions/dto.AddSubscriptionResponse'
+        "400":
+          description: Неверный формат JSON или некорректные данные
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Добавление новой подписки
+      tags:
+      - subscriptions
+  /subscriptions/{id}:
+    delete:
+      description: Удаляет подписку по идентификатору
+      parameters:
+      - description: ID подписки
+        example: 123
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Подписка успешно удалена
+        "400":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Удаление подписки
+      tags:
+      - subscriptions
+    get:
+      description: Возвращает информацию о подписке по ее идентификатору
+      parameters:
+      - description: ID подписки
+        example: 123
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Информация о подписке
+          schema:
+            $ref: '#/definitions/dto.GetSubscriptionResponse'
+        "400":
+          description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Получение подписки по ID
+      tags:
+      - subscriptions
+    patch:
+      consumes:
+      - application/json
+      description: Обновляет данные существующей подписки
+      parameters:
+      - description: ID подписки
+        example: 123
+        format: int64
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Данные для обновления подписки
+        in: body
+        name: input
+        required: true
+        schema:
+          $ref: '#/definitions/dto.UpdateSubscriptionRequest'
+      produces:
+      - application/json
+      responses:
+        "204":
+          description: Подписка успешно обновлена
+        "400":
+          description: Неверный формат JSON или некорректные данные
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Обновление подписки
+      tags:
+      - subscriptions
+  /subscriptions/cost:
+    get:
+      description: Возращает суммарную стоимость всех подписок
+      parameters:
+      - description: ID пользователя (UUID)
+        example: 123e4567-e89b-12d3-a456-426614174000
+        in: query
+        name: user_id
+        type: string
+      - description: Название сервиса
+        example: Netflix
+        in: query
+        name: service
+        type: string
+      - description: Дата начала (MM-YYYY)
+        example: 01-2026
+        in: query
+        name: from_date
+        required: true
+        type: string
+      - description: Дата окончания (MM-YYYY)
+        example: 07-2026
+        in: query
+        name: end_date
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: Суммарная стоимость подписок
+          schema:
+            $ref: '#/definitions/dto.TotalCostResponse'
+        "400":
+          description: Неверный формат JSON или некорректные данные
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "500":
+          description: Внутренняя ошибка сервера
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+      summary: Получение общей стоимости подписок
+      tags:
+      - subscriptions
+swagger: "2.0"
