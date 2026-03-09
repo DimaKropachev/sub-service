@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -8,9 +9,11 @@ import (
 	"os"
 
 	"github.com/DimaKropachev/sub-service/internal/config"
+	"github.com/DimaKropachev/sub-service/pkg/logger"
 	"github.com/golang-migrate/migrate/v4"
 	_ "github.com/golang-migrate/migrate/v4/database/postgres"
 	_ "github.com/golang-migrate/migrate/v4/source/file"
+	"go.uber.org/zap"
 )
 
 func main() {
@@ -33,6 +36,11 @@ func main() {
 		log.Fatalf("failed to parse config: %v\n", err)
 	}
 
+	l, err := logger.New(context.Background(), cfg.Env)
+	if err != nil {
+		log.Fatalf("failed to create logger: %v", err)
+	}
+
 	connStr := fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=%s",
 		cfg.DB.UserName,
 		cfg.DB.Password,
@@ -47,7 +55,7 @@ func main() {
 		connStr,
 	)
 	if err != nil {
-		log.Fatalf("failed to create instance migrate: %v\n", err)
+		l.Fatal("failed to create instance migrate", zap.Error(err))
 	}
 	defer m.Close()
 
@@ -59,40 +67,39 @@ func main() {
 			err = m.Up()
 		}
 		if err != nil && !errors.Is(err, migrate.ErrNoChange) {
-			log.Fatalf("migrations up failed: %v\n", err)
+			l.Fatal("migrations up failed", zap.Error(err))
 		}
-		log.Println("migrations applied successfully!")
+		l.Info("migrations applied successfully!")
 	case "down":
 		if steps > 0 {
 			err = m.Steps(-steps)
 		} else {
-			log.Fatalln("down without -steps is not allowed (dangerous)")
+			l.Fatal("down without -steps is not allowed (dangerous)")
 		}
 		if err != nil && !errors.Is(err, migrate.ErrNoChange) {
-			log.Fatalf("migrtions down failed: %v\n", err)
+			l.Fatal("migrations down failed", zap.Error(err))
 		}
-		log.Println("migrations rolled back successfully!")
+		l.Info("migrations rolled back successfully!")
 	case "force":
 		if version <= 0 {
-			log.Fatalln("force requires -version > 0")
+			l.Fatal("force requires -version > 0")
 		}
 		if err = m.Force(version); err != nil {
-			log.Fatalf("force failed: %v\n", err)
+			l.Fatal("force failed", zap.Error(err))
 		}
-		log.Printf("database version forcibly set to %d\n", version)
+		l.Info("database version forcibly set", zap.Int("version", version))
 	case "version":
 		v, dirty, err := m.Version()
 		if errors.Is(err, migrate.ErrNilVersion) {
-			log.Println("no migrations applied yet")
+			l.Info("no migrations applied yet")
 			return
 		}
 		if err != nil {
-			log.Fatalf("failed to get version: %v\n", err)
+			l.Fatal("failed to get version", zap.Error(err))
 		}
-
-		log.Printf("Current version: %d, Dirty: %v\n", v, dirty)
+		l.Info("version recieved", zap.Uint("Current_version", v), zap.Bool("Dirty_version", dirty))
 		if dirty {
-			log.Println("WARNING: database is in dirty state")
+			l.Warn("database is in dirty state")
 		}
 	}
 }
