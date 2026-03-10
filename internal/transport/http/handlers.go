@@ -97,6 +97,7 @@ func (h *Handler) AddNewSubscription(w http.ResponseWriter, r *http.Request) {
 // @Success 200 {object} dto.GetSubscriptionResponse "Информация о подписке"
 // @Failure 400 {object} dto.ErrorResponse "Неверный формат ID"
 // @Failure 404 {object} dto.ErrorResponse "Подписка не найдена"
+// @Failure 404 {object} dto.ErrorResponse "Подписка не найдена"
 // @Failure 500 {object} dto.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /subscriptions/{id} [get]
 func (h *Handler) GetSubscriptionByID(w http.ResponseWriter, r *http.Request) {
@@ -143,6 +144,7 @@ func (h *Handler) GetSubscriptionByID(w http.ResponseWriter, r *http.Request) {
 // @Param input body dto.UpdateSubscriptionRequest true "Данные для обновления подписки"
 // @Success 204 "Подписка успешно обновлена"
 // @Failure 400 {object} dto.ErrorResponse "Неверный формат JSON или некорректные данные"
+// @Failure 404 {object} dto.ErrorResponse "Подписка не найдена"
 // @Failure 500 {object} dto.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /subscriptions/{id} [patch]
 func (h *Handler) UpdateSubscription(w http.ResponseWriter, r *http.Request) {
@@ -196,6 +198,7 @@ func (h *Handler) UpdateSubscription(w http.ResponseWriter, r *http.Request) {
 // @Param id path int64 true "ID подписки" example(123)
 // @Success 204 "Подписка успешно удалена"
 // @Failure 400 {object} dto.ErrorResponse "Неверный формат ID"
+// @Failure 404 {object} dto.ErrorResponse "Подписка не найдена"
 // @Failure 500 {object} dto.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /subscriptions/{id} [delete]
 func (h *Handler) DeleteSubscriptionByID(w http.ResponseWriter, r *http.Request) {
@@ -267,7 +270,7 @@ func (h *Handler) GetListSubscriptions(w http.ResponseWriter, r *http.Request) {
 // @Param user_id query string false "ID пользователя (UUID)" example(123e4567-e89b-12d3-a456-426614174000)
 // @Param service query string false "Название сервиса" example(Netflix)
 // @Param from_date query string true "Дата начала (MM-YYYY)" example(01-2026)
-// @Param end_date query string true "Дата окончания (MM-YYYY)" example(07-2026)
+// @Param to_date query string true "Дата окончания (MM-YYYY)" example(07-2026)
 // @Success 200 {object} dto.TotalCostResponse "Суммарная стоимость подписок"
 // @Failure 400 {object} dto.ErrorResponse "Неверный формат JSON или некорректные данные"
 // @Failure 500 {object} dto.ErrorResponse "Внутренняя ошибка сервера"

@@ -125,7 +125,7 @@ const docTemplate = `{
                         "type": "string",
                         "example": "07-2026",
                         "description": "Дата окончания (MM-YYYY)",
-                        "name": "end_date",
+                        "name": "to_date",
                         "in": "query",
                         "required": true
                     }
@@ -186,6 +186,12 @@ const docTemplate = `{
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Подписка не найдена",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
@@ -220,6 +226,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Подписка не найдена",
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }
@@ -270,6 +282,12 @@ const docTemplate = `{
                     },
                     "400": {
                         "description": "Неверный формат JSON или некорректные данные",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Подписка не найдена",
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }

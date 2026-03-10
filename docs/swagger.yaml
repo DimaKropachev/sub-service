@@ -141,6 +141,10 @@ paths:
           description: Неверный формат ID
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Подписка не найдена
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
@@ -167,6 +171,10 @@ paths:
             $ref: '#/definitions/dto.GetSubscriptionResponse'
         "400":
           description: Неверный формат ID
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Подписка не найдена
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
         "500":
@@ -203,6 +211,10 @@ paths:
           description: Неверный формат JSON или некорректные данные
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
+        "404":
+          description: Подписка не найдена
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
@@ -233,7 +245,7 @@ paths:
       - description: Дата окончания (MM-YYYY)
         example: 07-2026
         in: query
-        name: end_date
+        name: to_date
         required: true
         type: string
       produces:

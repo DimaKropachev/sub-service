@@ -117,7 +117,7 @@
                         "type": "string",
                         "example": "07-2026",
                         "description": "Дата окончания (MM-YYYY)",
-                        "name": "end_date",
+                        "name": "to_date",
                         "in": "query",
                         "required": true
                     }
@@ -178,6 +178,12 @@
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     },
+                    "404": {
+                        "description": "Подписка не найдена",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
                     "500": {
                         "description": "Внутренняя ошибка сервера",
                         "schema": {
@@ -212,6 +218,12 @@
                     },
                     "400": {
                         "description": "Неверный формат ID",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Подписка не найдена",
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }
@@ -262,6 +274,12 @@
                     },
                     "400": {
                         "description": "Неверный формат JSON или некорректные данные",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
+                        }
+                    },
+                    "404": {
+                        "description": "Подписка не найдена",
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }
