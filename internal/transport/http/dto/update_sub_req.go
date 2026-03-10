@@ -8,7 +8,7 @@ import (
 )
 
 type UpdateSubscriptionRequest struct {
-	Price   *int    `json:"price,omitempty" example:"399"`
+	Price   *int64    `json:"price,omitempty" example:"399"`
 	EndDate *string `json:"end_date,omitempty" example:"07-2026"`
 }
 
