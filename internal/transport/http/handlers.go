@@ -22,7 +22,7 @@ type Service interface {
 	GetSub(context.Context, int64) (models.Subscription, error)
 	UpdateSub(context.Context, models.UpdateSubscription) error
 	DeleteSub(context.Context, int64) error
-	GetListSub(context.Context) ([]models.Subscription, error)
+	GetListSub(context.Context, models.Pagination) ([]models.Subscription, error)
 	GetTotalCost(context.Context, models.SubscriptionFilter) (int64, error)
 }
 
@@ -233,7 +233,10 @@ func (h *Handler) DeleteSubscriptionByID(w http.ResponseWriter, r *http.Request)
 // @Description Получает список всех подписок
 // @Tags subscriptions
 // @Produce json
+// @Param limit query uint64 false "Максимальное количество записей" example(25)
+// @Param offset query uint64 false "Количество пропускаемых записей" example(11)
 // @Success 200 {array} dto.GetSubscriptionResponse "Список подписок"
+// @Failure 400 {object} dto.ErrorResponse "Некорректные query-параметры"
 // @Failure 500 {object} dto.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /subscriptions [get]
 func (h *Handler) GetListSubscriptions(w http.ResponseWriter, r *http.Request) {
@@ -243,7 +246,39 @@ func (h *Handler) GetListSubscriptions(w http.ResponseWriter, r *http.Request) {
 		zap.String("x-request-id", requestID),
 	)
 
-	subs, err := h.s.GetListSub(ctx)
+	query := r.URL.Query()
+
+	var limit, offset *uint64
+	limitStr := query.Get("limit")
+	if limitStr == "" {
+		limit = nil
+	} else {
+		parsed, err := strconv.ParseUint(limitStr, 10, 64)
+		if err != nil {
+			writeErr(w, http.StatusBadRequest, "Invalid limit format")
+			return 
+		}
+		limit = &parsed
+	}
+
+	offsetStr := query.Get("offset")
+	if offsetStr == "" {
+		offset = nil
+	} else {
+		parsed, err := strconv.ParseUint(offsetStr, 10, 64)
+		if err != nil {
+			writeErr(w, http.StatusBadRequest, "Invalid offset format")
+			return 
+		}
+		offset = &parsed
+	}
+
+	pagination := models.Pagination{
+		Limit: limit,
+		Offset: offset,
+	}
+
+	subs, err := h.s.GetListSub(ctx, pagination)
 	if err != nil {
 		l.Error("couldn't get subscriptions", zap.Error(err))
 		writeErr(w, http.StatusInternalServerError, "Internal server error")
@@ -272,7 +307,7 @@ func (h *Handler) GetListSubscriptions(w http.ResponseWriter, r *http.Request) {
 // @Param from_date query string true "Дата начала (MM-YYYY)" example(01-2026)
 // @Param to_date query string true "Дата окончания (MM-YYYY)" example(07-2026)
 // @Success 200 {object} dto.TotalCostResponse "Суммарная стоимость подписок"
-// @Failure 400 {object} dto.ErrorResponse "Неверный формат JSON или некорректные данные"
+// @Failure 400 {object} dto.ErrorResponse "Некорректные query-параметры"
 // @Failure 500 {object} dto.ErrorResponse "Внутренняя ошибка сервера"
 // @Router /subscriptions/cost [get]
 func (h *Handler) GetTotalCostSubscriptions(w http.ResponseWriter, r *http.Request) {

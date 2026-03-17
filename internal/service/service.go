@@ -15,7 +15,7 @@ type Repository interface {
 	GetSub(context.Context, int64) (models.Subscription, error)
 	UpdateSub(context.Context, models.UpdateSubscription) error
 	DeleteSub(context.Context, int64) error
-	GetListSub(context.Context) ([]models.Subscription, error)
+	GetListSub(context.Context, models.Pagination) ([]models.Subscription, error)
 	GetTotalCost(context.Context, models.SubscriptionFilter) (int64, error)
 }
 
@@ -113,7 +113,7 @@ func (s *Service) DeleteSub(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (s *Service) GetListSub(ctx context.Context) ([]models.Subscription, error) {
+func (s *Service) GetListSub(ctx context.Context, pagination models.Pagination) ([]models.Subscription, error) {
 	requestID := ctx.Value(http.RequestIDKey).(string)
 
 	l := s.log.With(
@@ -121,7 +121,7 @@ func (s *Service) GetListSub(ctx context.Context) ([]models.Subscription, error)
 		zap.String("x-request-id", requestID),
 	)
 
-	subs, err := s.repo.GetListSub(ctx)
+	subs, err := s.repo.GetListSub(ctx, pagination)
 	if err != nil {
 		l.Error("failed get subscriptions", zap.Error(err))
 		return nil, err

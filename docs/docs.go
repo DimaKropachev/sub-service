@@ -25,6 +25,24 @@ const docTemplate = `{
                     "subscriptions"
                 ],
                 "summary": "Получение списка подписок",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 25,
+                        "description": "Максимальное количество записей",
+                        "name": "limit",
+                        "in": "query"
+                    },
+                    {
+                        "type": "integer",
+                        "format": "int64",
+                        "example": 11,
+                        "description": "Количество пропускаемых записей",
+                        "name": "offset",
+                        "in": "query"
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "Список подписок",
@@ -33,6 +51,12 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/dto.GetSubscriptionResponse"
                             }
+                        }
+                    },
+                    "400": {
+                        "description": "Некорректные query-параметры",
+                        "schema": {
+                            "$ref": "#/definitions/dto.ErrorResponse"
                         }
                     },
                     "500": {
@@ -138,7 +162,7 @@ const docTemplate = `{
                         }
                     },
                     "400": {
-                        "description": "Неверный формат JSON или некорректные данные",
+                        "description": "Некорректные query-параметры",
                         "schema": {
                             "$ref": "#/definitions/dto.ErrorResponse"
                         }

@@ -75,6 +75,19 @@ paths:
   /subscriptions:
     get:
       description: Получает список всех подписок
+      parameters:
+      - description: Максимальное количество записей
+        example: 25
+        format: int64
+        in: query
+        name: limit
+        type: integer
+      - description: Количество пропускаемых записей
+        example: 11
+        format: int64
+        in: query
+        name: offset
+        type: integer
       produces:
       - application/json
       responses:
@@ -84,6 +97,10 @@ paths:
             items:
               $ref: '#/definitions/dto.GetSubscriptionResponse'
             type: array
+        "400":
+          description: Некорректные query-параметры
+          schema:
+            $ref: '#/definitions/dto.ErrorResponse'
         "500":
           description: Внутренняя ошибка сервера
           schema:
@@ -256,7 +273,7 @@ paths:
           schema:
             $ref: '#/definitions/dto.TotalCostResponse'
         "400":
-          description: Неверный формат JSON или некорректные данные
+          description: Некорректные query-параметры
           schema:
             $ref: '#/definitions/dto.ErrorResponse'
         "500":

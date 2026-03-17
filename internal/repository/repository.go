@@ -124,8 +124,18 @@ func (r *Repository) DeleteSub(ctx context.Context, id int64) error {
 	return nil
 }
 
-func (r *Repository) GetListSub(ctx context.Context) ([]models.Subscription, error) {
-	q, args, err := r.builder.Select("id", "service", "price", "user_id", "start_date", "end_date").From("subscriptions").ToSql()
+func (r *Repository) GetListSub(ctx context.Context, pagination models.Pagination) ([]models.Subscription, error) {
+	qBuild := r.builder.Select("id", "service", "price", "user_id", "start_date", "end_date").From("subscriptions")
+
+	if pagination.Limit != nil {
+		qBuild = qBuild.Limit(*pagination.Limit)
+	}
+
+	if pagination.Offset != nil {
+		qBuild = qBuild.Offset(*pagination.Offset)
+	}
+
+	q, args, err := qBuild.ToSql()
 	if err != nil {
 		return nil, fmt.Errorf("failed to build sql-query: %w", err)
 	}
